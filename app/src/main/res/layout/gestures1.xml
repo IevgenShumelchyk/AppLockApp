@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:orientation="vertical" android:background="@color/white" android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <include android:id="@id/header" android:layout_width="fill_parent" android:layout_height="60.0dip" layout="@layout/header" />
+    <TextView android:textSize="17.0sp" android:textColor="@color/darkgrey" android:gravity="center|left" android:id="@id/textView1" android:background="@color/lt_grey" android:paddingLeft="30.0dip" android:layout_width="fill_parent" android:layout_height="45.0dip" android:text="Draw on the area below" android:layout_below="@id/header" />
+    <android.gesture.GestureOverlayView android:id="@id/gesture" android:background="@color/blue_gesture" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="10.0dip" android:layout_above="@id/footer" android:layout_below="@id/textView1" android:gestureStrokeType="multiple" />
+    <TextView android:background="@color/darkgrey" android:layout_width="fill_parent" android:layout_height="1.0px" android:layout_above="@id/footer" />
+    <LinearLayout android:orientation="horizontal" android:id="@id/footer" android:layout_width="fill_parent" android:layout_height="wrap_content" android:weightSum="2.0" android:layout_alignParentBottom="true">
+        <Button android:textStyle="bold" android:textColor="@color/crazy_blue" android:id="@id/cancel" android:background="@color/white" android:padding="15.0dip" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="CANCEL" android:layout_weight="1.0" />
+        <TextView android:background="@color/darkgrey" android:layout_width="1.0px" android:layout_height="fill_parent" />
+        <Button android:textStyle="bold" android:textColor="@color/crazy_blue" android:id="@id/submit" android:background="@color/white" android:padding="15.0dip" android:layout_width="0.0dip" android:layout_height="fill_parent" android:text="CONFIRM" android:layout_weight="1.0" />
+    </LinearLayout>
+</RelativeLayout>

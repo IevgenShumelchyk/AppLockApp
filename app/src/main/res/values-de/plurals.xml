@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="alp_pmsg_connect_x_dots">
+        <item quantity="other">"Verbinde mind. %1$d Punkte.
+Versuche es bitte erneut…"</item>
+        <item quantity="one">"Verbinde mind. %1$d Punkt.
+Versuche es bitte erneut…"</item>
+    </plurals>
+</resources>

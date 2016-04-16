@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="alp_pattern_path_light">@android:color/white</color>
+    <color name="alp_pattern_path_dark">#ff999999</color>
+    <color name="white">#ffffffff</color>
+    <color name="darkgrey">#ff7b7b7b</color>
+    <color name="crazy_blue">#ff03a9f4</color>
+    <color name="darkblue">#ff1c3f73</color>
+    <color name="lt_grey">#ffe9e9e9</color>
+    <color name="tabMedium">#ff2b2b2b</color>
+    <color name="tabDark">#ff000000</color>
+    <color name="tabTransparent">#10ffffff</color>
+    <color name="orange_lt">#ffefb400</color>
+    <color name="orange">#ffffd12d</color>
+    <color name="black">#ff000000</color>
+    <color name="blue">#ff05c7ff</color>
+    <color name="light_blue">#ffbee3ec</color>
+    <color name="grey">#ffadadad</color>
+    <color name="light_grey2">#ffaaaaaa</color>
+    <color name="light_grey">#ff818286</color>
+    <color name="link">#ffc8c3ae</color>
+    <color name="tab_unselected">#ff969077</color>
+    <color name="tab_selected1">#ff7c775e</color>
+    <color name="tab_selected2">#ff5f584b</color>
+    <color name="blue1">#ffadf1f9</color>
+    <color name="pink">#ffe54465</color>
+    <color name="green">#ff49ce7d</color>
+    <color name="bg">#ffc5ccd3</color>
+    <color name="header">#ff15a7e0</color>
+    <color name="blue_btn">#ff066bb7</color>
+    <color name="blue_gesture">#ff00bcd4</color>
+    <color name="yellow">#ffffeb3b</color>
+    <color name="purple">#ffcbd0e9</color>
+</resources>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr name="mode">
+        <enum name="left" value="0" />
+        <enum name="right" value="1" />
+    </attr>
+    <attr name="viewAbove" format="reference" />
+    <attr name="viewBehind" format="reference" />
+    <attr name="behindOffset" format="dimension" />
+    <attr name="behindWidth" format="dimension" />
+    <attr name="behindScrollScale" format="float" />
+    <attr name="touchModeAbove">
+        <enum name="margin" value="0" />
+        <enum name="fullscreen" value="1" />
+    </attr>
+    <attr name="touchModeBehind">
+        <enum name="margin" value="0" />
+        <enum name="fullscreen" value="1" />
+    </attr>
+    <attr name="shadowDrawable" format="reference" />
+    <attr name="shadowWidth" format="dimension" />
+    <attr name="fadeEnabled" format="boolean" />
+    <attr name="fadeDegree" format="float" />
+    <attr name="selectorEnabled" format="boolean" />
+    <attr name="selectorDrawable" format="reference" />
+    <attr name="alp_color_pattern_path" format="reference" />
+    <attr name="alp_drawable_btn_code_lock_default_holo" format="reference" />
+    <attr name="alp_drawable_btn_code_lock_touched_holo" format="reference" />
+    <attr name="alp_drawable_indicator_code_lock_point_area_default_holo" format="reference" />
+    <attr name="alp_ic_action_lockpattern" format="reference" />
+    <attr name="aosp_drawable_indicator_code_lock_point_area_normal" format="reference" />
+    <attr name="alp_button_bar_style" format="reference" />
+    <attr name="alp_button_bar_button_style" format="reference" />
+    <attr name="alp_theme_dialog" format="reference" />
+</resources>

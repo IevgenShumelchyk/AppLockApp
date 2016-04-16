@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="alp_pmsg_connect_x_dots">
+        <item quantity="other">"Conecta al menos %1$d puntos.
+Intentalo de nuevo…"</item>
+        <item quantity="one">"Conecta al menos %1$d punto.
+Intentalo de nuevo…"</item>
+    </plurals>
+</resources>

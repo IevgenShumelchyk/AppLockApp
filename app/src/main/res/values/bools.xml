@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="alp_is_large_screen">false</bool>
+    <bool name="alp_pkey_sys_auto_save_pattern_default">false</bool>
+    <bool name="alp_pkey_display_stealth_mode_default">false</bool>
+    <bool name="ga_autoActivityTracking">true</bool>
+    <bool name="ga_reportUncaughtExceptions">true</bool>
+</resources>
