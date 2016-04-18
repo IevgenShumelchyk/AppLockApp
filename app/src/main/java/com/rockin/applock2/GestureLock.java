@@ -1,189 +1,177 @@
 package com.rockin.applock2;
 
+import java.io.File;
+
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
 import android.gesture.GestureOverlayView;
-import android.gesture.GestureOverlayView.OnGestureListener;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.google.analytics.tracking.android.EasyTracker;
-import java.io.File;
 
-@TargetApi(4)
-public class GestureLock
-  extends Activity
-  implements View.OnClickListener
-{
-  private static final float LENGTH_THRESHOLD = 120.0F;
-  ImageButton backallpage;
-  private Button cancel;
-  CommonClass cc;
-  SharedPreferences.Editor e;
-  private Button mDoneButton;
-  private Gesture mGesture;
-  ProgressDialog pd;
-  SharedPreferences sp;
-  
-  public void addGesture(View paramView)
-  {
+@TargetApi(Build.VERSION_CODES.DONUT)
+public class GestureLock extends Activity implements OnClickListener{
+    private static final float LENGTH_THRESHOLD = 120.0f;
 
-    if ((this.mGesture != null) && (this.mGesture.getLength() > 130.0D))
-    {
-      this.pd.show();
-      this.cc.deleteFiles();
-      this.e.putString("locktype", "gesture");
-      this.e.putString("launched", "true");
-      this.e.commit();
-      setResult(-1);
-      new File(Environment.getExternalStorageDirectory(), "gestures").delete();
-      paramView = GestureLibraries.fromFile(new File(Environment.getExternalStorageDirectory(), "gestures"));
-      paramView.addGesture("My gesture", this.mGesture);
-      paramView.save();
-      paramView = Toast.makeText(this, "Gesture Recorded", 0);
-      paramView.setGravity(16, 0, 0);
-      paramView.show();
-      paramView = new Intent("installedappsapplock");
-      paramView.setFlags(67108864);
-      startActivity(paramView);
+    private Gesture mGesture;
+    private View mDoneButton;
+    
+    SharedPreferences sp;
+    Editor e;
+    
+    ImageButton backallpage;
+
+    CommonClass cc;
+    
+    ProgressDialog pd;
+    
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.gesturesnew);
+        
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+        mDoneButton = findViewById(R.id.submit);
+        
+        sp=getSharedPreferences("com.rockin.applock2", MODE_PRIVATE);
+        e=sp.edit();
+        
+        cc=new CommonClass(this);
+
+        GestureOverlayView overlay = (GestureOverlayView) findViewById(R.id.gesture);
+        overlay.addOnGestureListener(new GesturesProcessor());
+        
+        backallpage=(ImageButton)findViewById(R.id.backallpage);
+        
+        backallpage.setOnClickListener(this);
+        
+        pd=new ProgressDialog(this);
+		pd.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+		pd.setMessage("Loading..");
+		pd.setCancelable(false);
     }
-    for (;;)
-    {
-      finish();
-      return;
-      setResult(0);
+
+    @Override
+    public void onClick(View v) {
+    	
+    	switch(v.getId())
+    	{
+    	case R.id.backallpage:
+    		Intent i=new Intent("lockselectorapplock");
+    		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    		
+    		startActivity(i);
+    		finish();
+    		break;
+    	}
     }
-  }
-  
-  public void cancelGesture(View paramView)
-  {
-    setResult(0);
-    finish();
-  }
-  
-  public void onBackPressed()
-  {
-    super.onBackPressed();
-    startActivity(new Intent(this, Chooser.class));
-    finish();
-  }
-  
-  public void onClick(View paramView)
-  {
-    switch (paramView.getId())
-    {
-    default: 
-      return;
-    }
-    startActivity(new Intent(this, Chooser.class));
-    finish();
-  }
-  
-  protected void onCreate(Bundle paramBundle)
-  {
-    super.onCreate(paramBundle);
-    requestWindowFeature(1);
-    getWindow().setFlags(1024, 1024);
-    setContentView(2130903047);
-    setRequestedOrientation(1);
-    this.mDoneButton = ((Button)findViewById(2130968606));
-    this.cancel = ((Button)findViewById(2130968605));
-    this.sp = getSharedPreferences("com.rockin.applock2", 0);
-    this.e = this.sp.edit();
-    this.cc = new CommonClass(this);
-    ((GestureOverlayView)findViewById(2130968603)).addOnGestureListener(new GesturesProcessor(null));
-    this.mDoneButton.setOnClickListener(this);
-    this.cancel.setOnClickListener(this);
-    this.pd = new ProgressDialog(this);
-    this.pd.setProgressStyle(0);
-    this.pd.setMessage("Loading..");
-    this.pd.setCancelable(false);
-    ((TextView)findViewById(2130968582)).setText("Gesture");
-    ((Button)findViewById(2130968601)).setVisibility(4);
-  }
-  
-  protected void onRestoreInstanceState(final Bundle paramBundle)
-  {
-    super.onRestoreInstanceState(paramBundle);
-    this.mGesture = ((Gesture)paramBundle.getParcelable("gesture"));
-    if ((this.mGesture != null) && (this.mGesture.getLength() > 130.0D))
-    {
-      paramBundle = (GestureOverlayView)findViewById(2130968603);
-      paramBundle.post(new Runnable()
-      {
-        public void run()
-        {
-          paramBundle.setGesture(GestureLock.this.mGesture);
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        
+        if (mGesture != null && mGesture.getLength()>130.0) {
+            outState.putParcelable("gesture", mGesture);
         }
-      });
-      this.mDoneButton.setEnabled(true);
-      return;
     }
-    this.mDoneButton.setEnabled(false);
-  }
-  
-  protected void onSaveInstanceState(Bundle paramBundle)
-  {
-    super.onSaveInstanceState(paramBundle);
-    if ((this.mGesture != null) && (this.mGesture.getLength() > 130.0D)) {
-      paramBundle.putParcelable("gesture", this.mGesture);
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        
+        mGesture = savedInstanceState.getParcelable("gesture");
+        if (mGesture != null && mGesture.getLength()>130.0) {
+            final GestureOverlayView overlay =
+                    (GestureOverlayView) findViewById(R.id.gesture);
+            overlay.post(new Runnable() {
+                public void run() {
+                    overlay.setGesture(mGesture);
+                }
+            });
+
+            mDoneButton.setEnabled(true);
+        }
+        else
+        {
+        	mDoneButton.setEnabled(false);
+        }
     }
-  }
-  
-  public void onStart()
-  {
-    super.onStart();
-    EasyTracker.getInstance().activityStart(this);
-  }
-  
-  public void onStop()
-  {
-    super.onStop();
-    EasyTracker.getInstance().activityStop(this);
-  }
-  
-  private class GesturesProcessor
-    implements GestureOverlayView.OnGestureListener
-  {
-    private GesturesProcessor() {}
-    
-    public void onGesture(GestureOverlayView paramGestureOverlayView, MotionEvent paramMotionEvent) {}
-    
-    public void onGestureCancelled(GestureOverlayView paramGestureOverlayView, MotionEvent paramMotionEvent) {}
-    
-    public void onGestureEnded(GestureOverlayView paramGestureOverlayView, MotionEvent paramMotionEvent)
-    {
-      GestureLock.this.mGesture = paramGestureOverlayView.getGesture();
-      if (GestureLock.this.mGesture.getLength() < 120.0F) {
-        paramGestureOverlayView.clear(false);
-      }
-      GestureLock.this.mDoneButton.setEnabled(true);
+
+    public void addGesture(View v) {
+        if (mGesture != null && mGesture.getLength()>130.0) {
+
+        	pd.show();
+        	
+        	cc.deleteFiles();
+        	
+			e.putString("locktype", "gesture");
+			e.putString("launched", "true");
+			e.commit();
+        	
+            setResult(RESULT_OK);
+            
+            File mStoreFile1 = new File(Environment.getExternalStorageDirectory(), "gestures");
+            mStoreFile1.delete();
+            File mStoreFile = new File(Environment.getExternalStorageDirectory(), "gestures");
+            GestureLibrary sStore = GestureLibraries.fromFile(mStoreFile);
+            final GestureLibrary store = sStore;
+            store.addGesture("My gesture", mGesture);
+            store.save();
+            
+            Toast t=Toast.makeText(this, "Gesture Recorded", Toast.LENGTH_SHORT);
+			
+			t.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+			t.show();
+            
+            Intent i=new Intent("installedappsapplock");
+            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(i);
+        } else {
+            setResult(RESULT_CANCELED);
+        }
+
+        finish();
+        
     }
     
-    public void onGestureStarted(GestureOverlayView paramGestureOverlayView, MotionEvent paramMotionEvent)
-    {
-      GestureLock.this.mDoneButton.setEnabled(false);
-      GestureLock.this.mGesture = null;
+    public void cancelGesture(View v) {
+        setResult(RESULT_CANCELED);
+        finish();
     }
-  }
+    
+    private class GesturesProcessor implements GestureOverlayView.OnGestureListener {
+        public void onGestureStarted(GestureOverlayView overlay, MotionEvent event) {
+            mDoneButton.setEnabled(false);
+            mGesture = null;
+        }
+
+        public void onGesture(GestureOverlayView overlay, MotionEvent event) {
+        }
+
+        public void onGestureEnded(GestureOverlayView overlay, MotionEvent event) {
+            mGesture = overlay.getGesture();
+            if (mGesture.getLength() < LENGTH_THRESHOLD) {
+                overlay.clear(false);
+            }
+            mDoneButton.setEnabled(true);
+        }
+
+        public void onGestureCancelled(GestureOverlayView overlay, MotionEvent event) {
+        }
+    }
 }
-
-
-/* Location:              D:\ANDROID\Decompile\AppLock-dex2jar.jar!\com\rockin\applock2\GestureLock.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       0.7.1
- */

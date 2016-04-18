@@ -1,10 +1,15 @@
 package com.rockin.applock2;
 
+import java.io.File;
+import java.util.ArrayList;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
 import android.gesture.Gesture;
 import android.gesture.GestureLibraries;
 import android.gesture.GestureLibrary;
@@ -13,101 +18,110 @@ import android.gesture.GestureOverlayView.OnGesturePerformedListener;
 import android.gesture.Prediction;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageButton;
 import android.widget.Toast;
-import java.io.File;
-import java.util.ArrayList;
 
-public class GestureLockChange
-  extends Activity
-  implements GestureOverlayView.OnGesturePerformedListener, View.OnClickListener
-{
-  CommonClass cc;
-  SharedPreferences.Editor e;
-  GestureOverlayView gesture;
-  GestureLibrary library;
-  SharedPreferences sp;
-  
-  @SuppressLint({"NewApi"})
-  public void onBackPressed()
-  {
-    super.onBackPressed();
-    Intent localIntent = new Intent("chooserapplock");
-    localIntent.setFlags(67108864);
-    startActivity(localIntent);
-    finish();
-  }
-  
-  public void onClick(View paramView) {}
-  
-  protected void onCreate(Bundle paramBundle)
-  {
-    super.onCreate(paramBundle);
-    requestWindowFeature(1);
-    getWindow().setFlags(1024, 1024);
-    setContentView(2130903048);
-    setRequestedOrientation(1);
-    try
-    {
-      this.gesture = ((GestureOverlayView)findViewById(2130968603));
-      this.cc = new CommonClass(this);
-      this.sp = getSharedPreferences("com.rockin.applock2", 0);
-      this.e = this.sp.edit();
-      this.gesture.addOnGesturePerformedListener(this);
-      this.library = GestureLibraries.fromFile(new File(Environment.getExternalStorageDirectory().getAbsolutePath() + "/gestures"));
-      this.library.load();
-      ((TextView)findViewById(2130968582)).setText("Enter current gesture");
-      ((Button)findViewById(2130968601)).setVisibility(4);
-      return;
-    }
-    catch (Exception e) {}
-  }
-  
-  public void onGesturePerformed(GestureOverlayView paramGestureOverlayView, Gesture paramGesture)
-  {
-    Toast paramToast;
-    try
-    {
-      if (((Prediction)this.library.recognize(paramGesture).get(0)).score > 2.0D)
-      {
-        paramToast = Toast.makeText(this, "Success. Please change your lock now.", 0);
-        paramToast.setGravity(16, 0, 0);
-        paramToast.show();
-        this.e.putString("change", "true");
-        this.e.commit();
-        this.e.putString("change", null);
-        this.e.commit();
-        if (Utils.selected == 1) {
-          startActivity(new Intent(this, StringLockFirstTime.class));
-        }
-        for (;;)
-        {
-          finish();
-          return;
-          if (Utils.selected == 3) {
-            startActivity(new Intent(this, GestureLockFirstTime.class));
-          } else if (Utils.selected == 4) {
-            startActivity(new Intent(this, NumericLockFirstTime.class));
-          } else if (Utils.selected == 2) {
-            startActivity(new Intent(this, PatternLock.class));
-          }
-        }
-      }
-      paramToast = Toast.makeText(this, "Failed", 0);
-      paramToast.setGravity(16, 0, 0);
-      paramToast.show();
-      return;
-    }
-    catch (Exception e) {}
-  }
+
+public class GestureLockChange extends Activity implements OnGesturePerformedListener,OnClickListener{
+
+	GestureOverlayView gesture;
+	GestureLibrary library;
+	
+	ImageButton backallpage;
+	
+	SharedPreferences sp;
+	Editor e;
+	
+	CommonClass cc;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.gestures);
+		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		
+		try{
+			gesture=(GestureOverlayView)findViewById(R.id.gesture);
+			backallpage=(ImageButton)findViewById(R.id.backallpage);
+			
+			cc=new CommonClass(this);
+			
+			sp=this.getSharedPreferences("com.rockin.applock2",Context.MODE_PRIVATE);
+			e=sp.edit();
+			
+			gesture.addOnGesturePerformedListener(this);
+			File f=Environment.getExternalStorageDirectory();
+			String temp=f.getAbsolutePath()+"/gestures";
+			library=GestureLibraries.fromFile(new File(temp));
+			
+			library.load();
+			
+			backallpage.setOnClickListener(this);
+		}catch(Exception e){}
+	}
+	
+	@Override
+	public void onClick(View v) {
+		
+		try{
+			switch(v.getId())
+			{
+			case R.id.backallpage:
+				Intent i=new Intent("chooserapplock");
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i);
+				
+				finish();
+				break;
+			}
+		}catch(Exception e){}
+	}
+	
+	@SuppressLint("NewApi")
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		
+		Intent i=new Intent("chooserapplock");
+		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(i);
+		
+		finish();
+	}
+
+	public void onGesturePerformed(GestureOverlayView overlay, Gesture gesture) {
+		
+		try{
+			ArrayList<Prediction> pred=library.recognize(gesture);
+			
+			if(pred.get(0).score>2.0)
+			{
+				Toast t=Toast.makeText(this, "Success", Toast.LENGTH_SHORT);
+				
+				t.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+				t.show();
+				
+				e.putString("change", "true");
+				e.commit();
+				
+				Intent i=new Intent(GestureLockChange.this, LockSelector.class);
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i);
+				finish();
+			}
+			
+			else
+			{
+				Toast t=Toast.makeText(this, "Failed", Toast.LENGTH_SHORT);
+				
+				t.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+				t.show();
+			}
+		}catch(Exception e){}
+	}
+
 }
-
-
-/* Location:              D:\ANDROID\Decompile\AppLock-dex2jar.jar!\com\rockin\applock2\GestureLockChange.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       0.7.1
- */

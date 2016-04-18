@@ -1,97 +1,90 @@
 package com.rockin.applock2;
 
+import java.util.List;
+
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
-import java.util.ArrayList;
-import java.util.List;
 
-public class InstalledAppsCustomAdapter
-  extends BaseAdapter
-{
-  private List<App> data;
-  LayoutInflater inflater;
-  PackageManager pm;
-  
-  public InstalledAppsCustomAdapter(Context paramContext, List<App> paramList)
-  {
-    this.inflater = ((LayoutInflater)paramContext.getSystemService("layout_inflater"));
-    this.pm = paramContext.getPackageManager();
-    this.data = paramList;
-  }
-  
-  public int getCount()
-  {
-    return this.data.size();
-  }
-  
-  public Object getItem(int paramInt)
-  {
-    return this.data.get(paramInt);
-  }
-  
-  public long getItemId(int paramInt)
-  {
-    return paramInt;
-  }
-  
-  public View getView(int paramInt, View paramView, ViewGroup paramViewGroup)
-  {
-    App localApp = (App)getItem(paramInt);
-    TextView localTextView;
-    CheckBox localCheckBox;
-    if (paramView == null)
-    {
-      paramView = this.inflater.inflate(2130903051, null);
-      localTextView = (TextView)paramView.findViewById(2130968617);
-      localCheckBox = (CheckBox)paramView.findViewById(2130968618);
-      paramViewGroup = (ImageView)paramView.findViewById(2130968616);
-      paramView.setTag(new InstalledAppsViewHolder(localTextView, localCheckBox, paramViewGroup));
-      localCheckBox.setOnClickListener(new View.OnClickListener()
-      {
-        public void onClick(View paramAnonymousView)
-        {
-          paramAnonymousView = (CheckBox)paramAnonymousView;
-          int i = Integer.parseInt(paramAnonymousView.getTag().toString());
-          if (paramAnonymousView.isChecked())
-          {
-            InstalledApps.selectedappslist.add((App)InstalledAppsCustomAdapter.this.data.get(i));
-            return;
-          }
-          InstalledApps.selectedappslist.remove(InstalledAppsCustomAdapter.this.data.get(i));
-        }
-      });
-      localCheckBox.setTag(Integer.valueOf(paramInt));
-      if (!InstalledApps.selectedappslist.contains(localApp)) {
-        break label161;
-      }
-      localCheckBox.setChecked(true);
-    }
-    for (;;)
-    {
-      localTextView.setText(localApp.getName());
-      paramViewGroup.setBackgroundDrawable(localApp.getIcon());
-      return paramView;
-      paramViewGroup = (InstalledAppsViewHolder)paramView.getTag();
-      localTextView = paramViewGroup.getTextView();
-      localCheckBox = paramViewGroup.getCheckBox();
-      paramViewGroup = paramViewGroup.getImageView();
-      break;
-      label161:
-      localCheckBox.setChecked(false);
-    }
-  }
+public class InstalledAppsCustomAdapter extends ArrayAdapter<InstalledAppsView>{
+
+	LayoutInflater inflater;
+	PackageManager pm;
+	
+	public InstalledAppsCustomAdapter(Context context, List<InstalledAppsView> objects) {
+		super(context, R.layout.installedappslistview, R.id.appname, objects);
+		inflater=(LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		pm=context.getPackageManager();
+	}
+	
+	@SuppressWarnings("deprecation")
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		
+		InstalledAppsView installed=(InstalledAppsView) this.getItem(position);
+		
+		TextView appname;
+		CheckBox appselected;
+		ImageView appicon;
+		
+		if(convertView==null)
+		{
+			convertView=inflater.inflate(R.layout.installedappslistview, null);
+			appname=(TextView)convertView.findViewById(R.id.appname);
+			appselected=(CheckBox)convertView.findViewById(R.id.appselected);
+			appicon=(ImageView)convertView.findViewById(R.id.appicon);
+			
+			convertView.setTag(new InstalledAppsViewHolder(appname, appselected,appicon));
+			
+			appselected.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					CheckBox temp=(CheckBox) v;
+					InstalledAppsView temp1=(InstalledAppsView) temp.getTag();
+					temp1.setChecked(temp.isChecked());
+
+					int pos=InstalledApps.installedapps.indexOf(temp1.getName());
+					
+					if(temp.isChecked())
+					{
+						InstalledApps.selectedappslist.add(InstalledApps.listappinfo.get(pos));
+					} else {
+						InstalledApps.selectedappslist.remove(InstalledApps.listappinfo.get(pos));
+					}
+				}
+			});
+		}
+		else
+		{
+			InstalledAppsViewHolder temp=(InstalledAppsViewHolder) convertView.getTag();
+			appname=temp.getTextView();
+			appselected=temp.getCheckBox();
+			appicon=temp.getImageView();
+		}
+		
+		appselected.setTag(installed);
+		
+		if(InstalledApps.preselectedappindex.contains(position))
+		{
+			appselected.setChecked(true);
+		}
+		else
+		{
+			appselected.setChecked( installed.isChecked() );
+		}  
+	      
+	    appname.setText(installed.getName()); 
+	    appicon.setBackgroundDrawable(InstalledApps.listappinfo.get(position).loadIcon(pm));
+		
+		return convertView;
+	}
+
 }
-
-
-/* Location:              D:\ANDROID\Decompile\AppLock-dex2jar.jar!\com\rockin\applock2\InstalledAppsCustomAdapter.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       0.7.1
- */

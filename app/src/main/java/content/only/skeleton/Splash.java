@@ -1,160 +1,126 @@
 package content.only.skeleton;
 
 import android.app.Activity;
-//import android.app.AlertDialog.Builder;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.os.Build.VERSION;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.StrictMode;
-import android.os.StrictMode.ThreadPolicy.Builder;
 import android.view.Window;
-import content.only.skeleton.util.Globals;
-import content.only.skeleton.util.WebWeb;
+import android.view.WindowManager;
+
+import com.rockin.applock2.R;
+//import com.sammedia.leadgen.LeadGenSDK;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class Splash
-  extends Activity
-{
-  public void onCreate(Bundle paramBundle)
-  {
-    super.onCreate(paramBundle);
-    requestWindowFeature(1);
-    getWindow().setFlags(1024, 1024);
-    setContentView(2130903055);
-    if (Integer.valueOf(Build.VERSION.SDK).intValue() >= 9) {}
-    try
-    {
-      StrictMode.setThreadPolicy(new StrictMode.ThreadPolicy.Builder().permitAll().build());
-      Globals.setUserCountry(this);
-      new AssetsDownloadTask(null).execute(new Void[0]);
-      return;
-    }
-    catch (Exception paramBundle)
-    {
-      for (;;) {}
-    }
-  }
-  
-  public void proceed()
-  {
-    try
-    {
-      if ((new JSONObject(Globals.getMetaData(this)).getJSONObject(Globals.getCountry(this)).getJSONArray("lang").length() > 1) && (Globals.getLang(this).equals("na")))
-      {
-        Globals.setLang(this, "English");
-        showDialogLang();
-        return;
-      }
-      finish();
-      startActivity(new Intent(this, Globals.LAUNCHER_CLASS));
-      return;
-    }
-    catch (Exception localException)
-    {
-      localException.printStackTrace();
-      finish();
-      startActivity(new Intent(this, Globals.LAUNCHER_CLASS));
-    }
-  }
-  
-  public void showDialogLang()
-  {
-    try
-    {
-      AlertDialog.Builder localBuilder = new AlertDialog.Builder(this);
-      localBuilder.setTitle("Select Language");
-      JSONArray localJSONArray = new JSONObject(Globals.getMetaData(this)).getJSONObject(Globals.getCountry(this)).getJSONArray("lang");
-      final CharSequence[] arrayOfCharSequence = new CharSequence[localJSONArray.length()];
-      int i = 0;
-      for (;;)
-      {
-        if (i >= localJSONArray.length())
-        {
-          localBuilder.setItems(arrayOfCharSequence, new DialogInterface.OnClickListener()
-          {
-            public void onClick(DialogInterface paramAnonymousDialogInterface, int paramAnonymousInt)
-            {
-              Globals.getLang(Splash.this);
-              Globals.setLang(Splash.this, arrayOfCharSequence[paramAnonymousInt].toString());
-              Splash.this.finish();
-              paramAnonymousDialogInterface = new Intent(Splash.this, Globals.LAUNCHER_CLASS);
-              Splash.this.startActivity(paramAnonymousDialogInterface);
+import content.only.skeleton.util.Globals;
+import content.only.skeleton.util.WebWeb;
+
+public class Splash extends Activity {
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        setContentView(R.layout.splash);
+
+      //  LeadGenSDK.with(this, "52a872a08957dfdc033c9882", "52a8d43b8957dfd5033c9884");
+      //  LeadGenSDK.register();
+
+
+        Globals.setUserCountry(Splash.this);
+
+        if (Build.VERSION.SDK_INT >= 9) {
+            try {
+                StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder()
+                        .permitAll().build();
+                StrictMode.setThreadPolicy(policy);
+            } catch (Exception e) {
             }
-          });
-          localBuilder.create();
-          localBuilder.show();
-          return;
         }
-        arrayOfCharSequence[i] = localJSONArray.getString(i);
-        i += 1;
-      }
-      return;
+
+        new AssetsDownloadTask().execute();
     }
-    catch (Exception localException)
-    {
-      localException.printStackTrace();
-    }
-  }
-  
-  private class AssetsDownloadTask
-    extends AsyncTask<Void, Void, Void>
-  {
-    private String msg = "";
-    private ProgressDialog progressDialog;
-    
-    private AssetsDownloadTask() {}
-    
-    protected Void doInBackground(Void... paramVarArgs)
-    {
-      Globals.startBackgroundService(Splash.this);
-      if ((Globals.isNetworkAvailable(Splash.this)) && (WebWeb.isNewMetaDataAvailable(Splash.this))) {
-        WebWeb.fetchAppMetaData(Splash.this);
-      }
-      for (;;)
-      {
-        return null;
-        try
-        {
-          Thread.sleep(1200L);
+
+    private class AssetsDownloadTask extends AsyncTask<Void, Void, Void> {
+
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            Globals.keepTheLightsOn(Splash.this);
+            progressDialog = ProgressDialog.show(Splash.this, "",
+                    "Downloading App Resources...");
         }
-        catch (InterruptedException paramVarArgs)
-        {
-          paramVarArgs.printStackTrace();
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Globals.startBackgroundService(Splash.this);
+
+            if (Globals.getMetaData(Splash.this).length() == 0) { // no metadata available
+                WebWeb.isNewMetaDataAvailable(Splash.this);
+                WebWeb.fetchAppMetaData(Splash.this);
+            }
+
+            return null;
         }
-      }
-    }
-    
-    protected void onPostExecute(Void paramVoid)
-    {
-      if ((this.progressDialog != null) && (this.progressDialog.isShowing()) && (!Splash.this.isFinishing())) {
-        this.progressDialog.dismiss();
-      }
-      Globals.releaseWakeLock();
-      Splash.this.proceed();
-    }
-    
-    protected void onPreExecute()
-    {
-      Globals.keepTheLightsOn(Splash.this);
-      if (Globals.getMetaData(Splash.this).length() == 0) {}
-      for (this.msg = "Downloading App Resources...";; this.msg = "Loading...")
-      {
-        if ((!Splash.this.isFinishing()) && (Splash.this != null)) {
-          this.progressDialog = ProgressDialog.show(Splash.this, "", this.msg);
+
+        protected void onPostExecute(Void result) {
+            progressDialog.dismiss();
+            Globals.releaseWakeLock();
+            proceed();
         }
-        return;
-      }
     }
-  }
+
+    public void proceed() {
+        try {
+            JSONObject obj = new JSONObject(Globals.getMetaData(Splash.this));
+            JSONArray arr = obj.getJSONObject(Globals.getCountry(Splash.this)).getJSONArray("lang");
+            if (arr.length() > 1 && Globals.getLang(Splash.this).equals("na")) {
+                Globals.setLang(Splash.this, "English");
+                showDialogLang();
+            } else {
+                finish();
+                Intent intent = new Intent(Splash.this, Globals.LAUNCHER_CLASS);
+                startActivity(intent);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            finish();
+            Intent intent = new Intent(Splash.this, Globals.LAUNCHER_CLASS);
+            startActivity(intent);
+        }
+    }
+
+    public void showDialogLang() {
+        try {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Select Language");
+            JSONObject obj = new JSONObject(Globals.getMetaData(Splash.this));
+            JSONArray arr = obj.getJSONObject(Globals.getCountry(Splash.this)).getJSONArray("lang");
+            final CharSequence[] items = new CharSequence[arr.length()];
+            for (int i = 0; i < arr.length(); i++)
+                items[i] = arr.getString(i);
+            builder.setItems(items, new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int which) {
+                    Globals.getLang(Splash.this);
+                    Globals.setLang(Splash.this, items[which].toString());
+                    finish();
+                    Intent intent = new Intent(Splash.this, Globals.LAUNCHER_CLASS);
+                    startActivity(intent);
+                }
+            });
+            builder.create();
+            builder.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }
-
-
-/* Location:              D:\ANDROID\Decompile\AppLock-dex2jar.jar!\content\only\skeleton\Splash.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       0.7.1
- */

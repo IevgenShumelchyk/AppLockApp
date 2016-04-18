@@ -1,106 +1,92 @@
 package content.only.skeleton.util;
 
-public class Dialog
-{
-  private String check = "";
-  private String message = "";
-  private String negativeAnswer = "";
-  private String positiveAnswer = "";
-  private String status = "";
-  private String title = "App Lock";
-  
-  public Dialog(String paramString)
-  {
-    this.message = paramString;
-  }
-  
-  public Dialog(String paramString1, String paramString2)
-  {
-    this.message = paramString1;
-    this.check = paramString2;
-  }
-  
-  public Dialog(String paramString1, String paramString2, String paramString3)
-  {
-    this.message = paramString1;
-    this.positiveAnswer = paramString2;
-    this.negativeAnswer = paramString3;
-  }
-  
-  public Dialog(String paramString1, String paramString2, String paramString3, String paramString4)
-  {
-    this.message = paramString1;
-    this.positiveAnswer = paramString2;
-    this.negativeAnswer = paramString3;
-    this.status = paramString4;
-  }
-  
-  public Dialog(String paramString1, String paramString2, String paramString3, String paramString4, String paramString5)
-  {
-    this.title = paramString1;
-    this.message = paramString2;
-    this.positiveAnswer = paramString3;
-    this.negativeAnswer = paramString4;
-    this.status = paramString5;
-  }
-  
-  public String getCheck()
-  {
-    return this.check;
-  }
-  
-  public String getMessage()
-  {
-    return this.message;
-  }
-  
-  public String getNegativeAnswer()
-  {
-    return this.negativeAnswer;
-  }
-  
-  public String getPositiveAnswer()
-  {
-    return this.positiveAnswer;
-  }
-  
-  public String getStatus()
-  {
-    return this.status;
-  }
-  
-  public String getTitle()
-  {
-    return this.title;
-  }
-  
-  public void setCheck(String paramString)
-  {
-    this.check = paramString;
-  }
-  
-  public void setMessage(String paramString)
-  {
-    this.message = paramString;
-  }
-  
-  public void setNegativeAnswer(String paramString)
-  {
-    this.negativeAnswer = paramString;
-  }
-  
-  public void setPositiveAnswer(String paramString)
-  {
-    this.positiveAnswer = paramString;
-  }
-  
-  public void setStatus(String paramString)
-  {
-    this.status = paramString;
-  }
-  
-  public void setTitle(String paramString)
-  {
-    this.title = paramString;
-  }
+/**
+ * Dialog type, used to set text to Dialogs.
+ */
+public class Dialog {
+
+    private String title = Globals.APP_NAME;
+    private String message = "";
+    private String positiveAnswer = "";
+    private String negativeAnswer = "";
+    private String status = "";
+    private String check = "";
+
+    public Dialog(String title, String message, String positiveAnswer, String negativeAnswer, String status) {
+        this.title = title;
+        this.message = message;
+        this.positiveAnswer = positiveAnswer;
+        this.negativeAnswer = negativeAnswer;
+        this.status = status;
+    }
+
+    public Dialog(String message, String positiveAnswer, String negativeAnswer, String status) {
+        this.message = message;
+        this.positiveAnswer = positiveAnswer;
+        this.negativeAnswer = negativeAnswer;
+        this.status = status;
+    }
+
+    public Dialog(String title) {
+        this.message = title;
+    }
+
+    public Dialog(String message, String positiveAnswer, String negativeAnswer) {
+        this.message = message;
+        this.positiveAnswer = positiveAnswer;
+        this.negativeAnswer = negativeAnswer;
+    }
+
+    public Dialog(String message, String check) {
+        this.message = message;
+        this.check = check;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getPositiveAnswer() {
+        return positiveAnswer;
+    }
+
+    public void setPositiveAnswer(String positiveAnswer) {
+        this.positiveAnswer = positiveAnswer;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    public String getNegativeAnswer() {
+        return negativeAnswer;
+    }
+
+    public void setNegativeAnswer(String negativeAnswer) {
+        this.negativeAnswer = negativeAnswer;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    public String getCheck() {
+        return check;
+    }
+
+    public void setCheck(String check) {
+        this.check = check;
+    }
 }

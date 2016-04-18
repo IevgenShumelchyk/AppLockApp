@@ -1,52 +1,32 @@
 package com.rockin.applock2;
 
-import android.content.pm.ApplicationInfo;
-
-public class InstalledAppsView
-{
-  private boolean checked = false;
-  private ApplicationInfo info;
-  
-  public InstalledAppsView() {}
-  
-  public InstalledAppsView(ApplicationInfo paramApplicationInfo)
-  {
-    setInfo(paramApplicationInfo);
-  }
-  
-  public ApplicationInfo getInfo()
-  {
-    return this.info;
-  }
-  
-  public boolean isChecked()
-  {
-    return this.checked;
-  }
-  
-  public void setChecked(boolean paramBoolean)
-  {
-    this.checked = paramBoolean;
-  }
-  
-  public void setInfo(ApplicationInfo paramApplicationInfo)
-  {
-    this.info = paramApplicationInfo;
-  }
-  
-  public void toggleChecked()
-  {
-    if (this.checked) {}
-    for (boolean bool = false;; bool = true)
-    {
-      this.checked = bool;
-      return;
-    }
-  }
+public class InstalledAppsView {
+	 private String name = "" ;  
+	    private boolean checked = false ;  
+	    public InstalledAppsView() {}   
+	    public InstalledAppsView( String name ) {  
+	      this.name = name ;  
+	    }  
+	    public InstalledAppsView( String name, boolean checked ) {  
+	      this.name = name ;  
+	      this.checked = checked ;  
+	    }  
+	    public String getName() {  
+	      return name;  
+	    }  
+	    public void setName(String name) {  
+	      this.name = name;  
+	    }  
+	    public boolean isChecked() {  
+	      return checked;  
+	    }  
+	    public void setChecked(boolean checked) {  
+	      this.checked = checked;  
+	    }  
+	    public String toString() {  
+	      return name ;   
+	    }  
+	    public void toggleChecked() {  
+	      checked = !checked ;  
+	    }
 }
-
-
-/* Location:              D:\ANDROID\Decompile\AppLock-dex2jar.jar!\com\rockin\applock2\InstalledAppsView.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       0.7.1
- */

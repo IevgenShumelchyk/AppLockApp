@@ -4,54 +4,36 @@ import android.widget.CheckBox;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class InstalledAppsViewHolder
-{
-  CheckBox checkbox;
-  ImageView imageView;
-  TextView textView;
-  
-  public InstalledAppsViewHolder() {}
-  
-  public InstalledAppsViewHolder(TextView paramTextView, CheckBox paramCheckBox, ImageView paramImageView)
-  {
-    this.checkbox = paramCheckBox;
-    this.textView = paramTextView;
-    this.imageView = paramImageView;
-  }
-  
-  public CheckBox getCheckBox()
-  {
-    return this.checkbox;
-  }
-  
-  public ImageView getImageView()
-  {
-    return this.imageView;
-  }
-  
-  public TextView getTextView()
-  {
-    return this.textView;
-  }
-  
-  public void setCheckBox(CheckBox paramCheckBox)
-  {
-    this.checkbox = paramCheckBox;
-  }
-  
-  public void setImageView(ImageView paramImageView)
-  {
-    this.imageView = paramImageView;
-  }
-  
-  public void setTextView(TextView paramTextView)
-  {
-    this.textView = paramTextView;
-  }
+public class InstalledAppsViewHolder {
+	
+	CheckBox checkbox;
+	TextView textView ;  
+	ImageView imageView;
+    public InstalledAppsViewHolder() {}  
+    public InstalledAppsViewHolder( TextView textView, CheckBox checkbox,ImageView imageView ) {  
+      this.checkbox = checkbox;  
+      this.textView = textView ;  
+      this.imageView=imageView;
+    }  
+    public CheckBox getCheckBox() {  
+      return checkbox;  
+    }  
+    public void setCheckBox(CheckBox checkbox) {  
+      this.checkbox = checkbox;  
+    }  
+    public TextView getTextView() {  
+      return textView;  
+    }  
+    public void setTextView(TextView textView) {  
+      this.textView = textView;  
+    } 
+    public void setImageView(ImageView imageView)
+    {
+    	this.imageView=imageView;
+    }
+    public ImageView getImageView()
+    {
+    	return imageView;
+    }
+    
 }
-
-
-/* Location:              D:\ANDROID\Decompile\AppLock-dex2jar.jar!\com\rockin\applock2\InstalledAppsViewHolder.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       0.7.1
- */

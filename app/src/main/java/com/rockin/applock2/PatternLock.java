@@ -1,138 +1,166 @@
 package com.rockin.applock2;
 
+import group.pals.android.lib.ui.lockpattern.LockPatternActivity;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import com.google.analytics.tracking.android.EasyTracker;
-import group.pals.android.lib.ui.lockpattern.LockPatternActivity;
-import java.util.ArrayList;
-import java.util.StringTokenizer;
 
-public class PatternLock
-  extends Activity
-{
-  private static final int REQ_ENTER_PATTERN = 2;
-  final int REQ_CREATE_PATTERN = 1;
-  CommonClass cc;
-  SharedPreferences.Editor e;
-  SharedPreferences sp;
-  String temp;
-  
-  protected void onActivityResult(int paramInt1, int paramInt2, Intent paramIntent)
-  {
-    Intent paramIntent1;
-    super.onActivityResult(paramInt1, paramInt2, paramIntent);
-    switch (paramInt1)
-    {
-    default: 
-      return;
-    case 1: 
-      if (paramInt2 == -1)
-      {
-        String paramIntentStr = new String(paramIntent.getCharArrayExtra(LockPatternActivity.EXTRA_PATTERN));
-        this.cc.deleteFiles();
-        this.e.putString("locktype", "pattern");
-        this.e.putString("launched", "true");
-        this.e.putString("password", paramIntentStr);
-        this.e.commit();
-        if (getIntent().getExtras() == null)
-        {
-          paramIntent = new Intent("installedappsapplock");
-          paramIntent.setFlags(67108864);
-          startActivity(paramIntent);
-          finish();
-          return;
-        }
-        finish();
-        return;
-      }
-      this.e.putString("formfilled", null);
-      this.e.commit();
-      return;
-    }
+public class PatternLock extends Activity {
+	
+	final int REQ_CREATE_PATTERN=1;
+	private static final int REQ_ENTER_PATTERN = 2;
+	
+	Editor e;
+	SharedPreferences sp;
+	
+	CommonClass cc;
+	
+	String temp;
 
-    if (getIntent().getExtras() == null)
-    {
-      paramIntent1 = new Intent("installedappsapplock");
-      paramIntent1.setFlags(67108864);
-      startActivity(paramIntent1);
-      finish();
-      return;
-    }
-    finish();
-  }
-  
-  public void onBackPressed()
-  {
-    super.onBackPressed();
-    Bundle localBundle = getIntent().getExtras();
-    String str = null;
-    Object localObject = null;
-    if (localBundle != null)
-    {
-      str = localBundle.getString("index");
-      localObject = localBundle.getString("fromservice");
-    }
-    if ((str != null) && (((String)localObject).equals("true")))
-    {
-      int i = Integer.parseInt(str);
-      ServiceAppLock.selectappstrack.set(i, "0");
-    }
-    if (this.sp.getString("change", null) != null)
-    {
-      this.e.putString("change", null);
-      this.e.commit();
-    }
-    localObject = new Intent(this, Chooser.class);
-    ((Intent)localObject).setFlags(67108864);
-    startActivity((Intent)localObject);
-    finish();
-  }
-  
-  protected void onCreate(Bundle paramBundle)
-  {
-    String paramBundleStr;
-    super.onCreate(paramBundle);
-    setRequestedOrientation(1);
-    this.sp = getSharedPreferences("com.rockin.applock2", 0);
-    this.e = this.sp.edit();
-    this.cc = new CommonClass(this);
-    Object localObject = this.sp.getString("password", "0");
-    paramBundle = (Bundle)localObject;
-    if (this.sp.getString("change", null) != null)
-    {
-      this.temp = ((String)localObject);
-      paramBundleStr = "0";
-    }
-    if (paramBundle.equals("0"))
-    {
-      startActivityForResult(new Intent(LockPatternActivity.ACTION_CREATE_PATTERN, null, this, LockPatternActivity.class), 1);
-      return;
-    }
-    localObject = new Intent(LockPatternActivity.ACTION_COMPARE_PATTERN, null, this, LockPatternActivity.class);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		
+		sp=this.getSharedPreferences("com.rockin.applock2",Context.MODE_PRIVATE);
+		e=sp.edit();
+		
+		cc=new CommonClass(this);
+		
+		String pass=sp.getString("password", "0");
+		String change=sp.getString("change", null);
+		
+		if(change!=null)
+		{
+			temp=pass;
+			pass="0";
+		}
+		
+		if(pass.equals("0"))
+		{
+			Intent i=new Intent(LockPatternActivity.ACTION_CREATE_PATTERN, null,this, LockPatternActivity.class);
+			
+			startActivityForResult(i, REQ_CREATE_PATTERN);
+		}
+		else
+		{
+			Intent intent = new Intent(LockPatternActivity.ACTION_COMPARE_PATTERN, null,this, LockPatternActivity.class);
+			
+			char[] savedPattern=pass.toCharArray();
+			
+			intent.putExtra(LockPatternActivity.EXTRA_PATTERN, savedPattern);
+			startActivityForResult(intent, REQ_ENTER_PATTERN);
+		}
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		switch(requestCode)
+		{
+		case REQ_CREATE_PATTERN:
+			if(resultCode==RESULT_OK)
+			{
+				char[] pattern=data.getCharArrayExtra(LockPatternActivity.EXTRA_PATTERN);
+				
+				String s=new String(pattern);
+				
+				cc.deleteFiles();
+				
+				e.putString("locktype", "pattern");
+				e.putString("launched", "true");	
+				e.putString("password", s);
+				e.commit();
+				
+				Bundle b1=getIntent().getExtras();
+				
+				if(b1==null)
+				{
+					Intent i=new Intent("installedappsapplock");
+					i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(i);
+					
+					finish();
+				}
+				else
+				{
+					finish();
+				}
+			}
+			else
+			{
+				e.putString("formfilled", null);
+				e.commit();
+			}
+			break;
+		case REQ_ENTER_PATTERN: {
+	        switch (resultCode) {
+	        case RESULT_OK:
+	        	Bundle b1=getIntent().getExtras();
+	        	
+				if(b1==null)
+				{
+					Intent i=new Intent("installedappsapplock");
+					i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+					startActivity(i);
+					finish();
+				}
+				else
+				{
+					finish();
+				}
+	            break;
+	        case RESULT_CANCELED:
+	        	break;
+	        case LockPatternActivity.RESULT_FAILED:
+	        	break;
+	        }
+		}
+		}
 
-    //paramBundleStr = paramBundleStr.toCharArray();
-    ((Intent)localObject).putExtra(LockPatternActivity.EXTRA_PATTERN, paramBundle);
-    startActivityForResult((Intent)localObject, 2);
-  }
-  
-  public void onStart()
-  {
-    super.onStart();
-    EasyTracker.getInstance(this).activityStart(this);
-  }
-  
-  public void onStop()
-  {
-    super.onStop();
-    EasyTracker.getInstance(this).activityStop(this);
-  }
+	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		
+		Bundle b=getIntent().getExtras();
+		
+		String i=null,fs=null;
+		
+		if(b!=null)
+		{
+			i=b.getString("index");
+			fs=b.getString("fromservice");
+		}
+		
+		if(i!=null && fs.equals("true"))
+		{
+			int index=Integer.parseInt(i);
+			ServiceAppLock.selectappstrack.set(index, "0");
+		}
+		
+		String change=sp.getString("change", null);
+		
+		if(change!=null)
+		{
+			e.putString("change", null);
+			e.commit();
+		}
+		
+		if(b==null)
+		{
+			Intent i1=new Intent("lockselectorapplock");
+			i1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			startActivity(i1);
+		}
+		
+		finish();
+	}
 }
-
-
-/* Location:              D:\ANDROID\Decompile\AppLock-dex2jar.jar!\com\rockin\applock2\PatternLock.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       0.7.1
- */

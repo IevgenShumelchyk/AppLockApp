@@ -1,115 +1,113 @@
 package com.rockin.applock2;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.text.Editable;
+import android.view.Gravity;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.Window;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
-public class StringLockChange
-  extends Activity
-  implements View.OnClickListener
-{
-  boolean b;
-  CommonClass cc;
-  SharedPreferences.Editor e;
-  EditText password;
-  SharedPreferences sp;
-  private Button submit;
-  
-  public void check()
-    throws Exception
-  {
-    String str = this.password.getText().toString();
-    this.b = this.cc.checkPassword(str);
-  }
-  
-  public void onClick(View paramView)
-  {
-    for (;;)
-    {
-      try
-      {
-        switch (paramView.getId())
-        {
-        case 2130968620: 
-          check();
-          if (!this.b) {
-            break label206;
-          }
-          paramView = Toast.makeText(this, "Success. Please change your lock now.", 0);
-          paramView.setGravity(16, 0, 0);
-          paramView.show();
-          this.e.putString("change", "true");
-          this.e.commit();
-          this.e.putString("change", null);
-          this.e.commit();
-          if (Utils.selected == 1)
-          {
-            startActivity(new Intent(this, StringLockFirstTime.class));
-            finish();
-            return;
-          }
-          break;
-        }
-      }
-      catch (Exception paramView)
-      {
-        paramView.printStackTrace();
-        return;
-      }
-      if (Utils.selected == 3) {
-        startActivity(new Intent(this, GestureLockFirstTime.class));
-      } else if (Utils.selected == 4) {
-        startActivity(new Intent(this, NumericLockFirstTime.class));
-      } else if (Utils.selected == 2) {
-        startActivity(new Intent(this, PatternLock.class));
-      }
-    }
-    label206:
-    paramView = Toast.makeText(this, "Incorrect Password", 0);
-    paramView.setGravity(16, 0, 0);
-    paramView.show();
-    this.password.setText("");
-    return;
-  }
-  
-  protected void onCreate(Bundle paramBundle)
-  {
-    super.onCreate(paramBundle);
-    requestWindowFeature(1);
-    getWindow().setFlags(1024, 1024);
-    setContentView(2130903056);
-    setRequestedOrientation(1);
-    try
-    {
-      this.sp = getSharedPreferences("com.rockin.applock2", 0);
-      this.e = this.sp.edit();
-      this.password = ((EditText)findViewById(2130968609));
-      this.submit = ((Button)findViewById(2130968620));
-      this.cc = new CommonClass(this);
-      this.submit.setOnClickListener(this);
-      ((TextView)findViewById(2130968582)).setText("Enter current password");
-      ((Button)findViewById(2130968601)).setVisibility(4);
-      return;
-    }
-    catch (Exception paramBundle)
-    {
-      paramBundle.printStackTrace();
-    }
-  }
+public class StringLockChange extends Activity implements OnClickListener{
+	
+	EditText password;
+	ImageButton submit,backallpage;
+	
+	SharedPreferences sp;
+	Editor e;
+	
+	CommonClass cc;
+	
+	boolean b;
+	
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.stringlock);
+		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		
+		try{
+			sp=this.getSharedPreferences("com.rockin.applock2",Context.MODE_PRIVATE);
+			e=sp.edit();
+			
+			password=(EditText)findViewById(R.id.password);
+			submit=(ImageButton)findViewById(R.id.submit);
+			backallpage=(ImageButton)findViewById(R.id.backallpage);
+			
+			cc=new CommonClass(this);
+			
+			backallpage.setOnClickListener(this);
+			submit.setOnClickListener(this);
+		}catch(Exception e){}
+	}
+
+	public void onClick(View v) {
+		
+		try{
+			switch(v.getId())
+			{
+			case R.id.submit:
+				check();
+				
+				if(b==true)
+				{
+					Toast t=Toast.makeText(this, "Success", Toast.LENGTH_SHORT);
+					
+					t.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+					t.show();
+					
+					e.putString("change", "true");
+		        	e.commit();
+		        	
+		        	Intent i=new Intent(this,LockSelector.class);
+		        	i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		        	startActivity(i);
+		        	finish();
+				}
+				else
+				{
+					Toast t1=Toast.makeText(this, "Incorrect Password", Toast.LENGTH_SHORT);
+					
+					t1.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+					t1.show();
+					
+					password.setText("");
+				}
+				break;
+			case R.id.backallpage:
+				Intent i=new Intent("chooserapplock");
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i);
+				
+				finish();
+				break;
+			}
+		}catch(Exception e){	
+		}
+	}
+	
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		
+		Intent i=new Intent("chooserapplock");
+		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(i);
+		
+		finish();
+	}
+	
+	public void check() throws Exception
+	{
+		String s=password.getText().toString();
+		b=cc.checkPassword(s);
+	}
 }
-
-
-/* Location:              D:\ANDROID\Decompile\AppLock-dex2jar.jar!\com\rockin\applock2\StringLockChange.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       0.7.1
- */

@@ -1,144 +1,159 @@
 package com.rockin.applock2;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.app.ProgressDialog;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.os.Bundle;
-import android.text.Editable;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
-import com.google.analytics.tracking.android.EasyTracker;
 import java.net.URI;
 import java.util.UUID;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 
-public class ForgotPassword
-  extends Activity
-  implements View.OnClickListener
-{
-  Toast paramToast;
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
+import android.content.pm.ActivityInfo;
+import android.os.Bundle;
+import android.os.StrictMode;
+import android.view.Gravity;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
-  CommonClass cc;
-  SharedPreferences.Editor e;
-  EditText emailid;
-  EditText name;
-  String newpassword;
-  private ProgressDialog pd;
-  String semailid;
-  String sname;
-  SharedPreferences sp;
-  private View submit;
-  
-  public void generateRandomPassword()
-    throws Exception
-  {
-    this.newpassword = UUID.randomUUID().toString();
-    if (this.newpassword.length() > 5) {
-      this.newpassword = this.newpassword.substring(0, 5);
-    }
-    this.cc.writePassword(this.newpassword);
-    this.e.putString("locktype", "string");
-    this.e.commit();
-  }
-  
-  public void onClick(View paramView)
-  {
-    try
-    {
-      switch (paramView.getId())
-      {
-      case 2130968600:
-        String paramString;
-        paramString = this.name.getText().toString();
-        String str = this.emailid.getText().toString();
-        if ((paramString != null) && (str != null))
-        {
-          if ((paramString.equalsIgnoreCase(this.sname)) && (str.equalsIgnoreCase(this.semailid)))
-          {
-            generateRandomPassword();
-            sendEmail();
-            return;
-          }
-          paramToast = Toast.makeText(this, "Incorrect Details", 0);
-          paramToast.setGravity(16, 0, 0);
-          paramToast.show();
-          return;
-        }
-        paramToast = Toast.makeText(this, "Enter All Details", 0);
-        paramToast.setGravity(16, 0, 0);
-        paramToast.show();
-        return;
-      }
-      return;
-    }
-    catch (Exception e) {}
-  }
-  
-  @SuppressLint({"NewApi"})
-  protected void onCreate(Bundle paramBundle)
-  {
-    super.onCreate(paramBundle);
-    setContentView(2130903044);
-    setRequestedOrientation(1);
-    try
-    {
-      this.sp = getSharedPreferences("com.rockin.applock2", 0);
-      this.e = this.sp.edit();
-      this.sname = this.sp.getString("name", null);
-      this.semailid = this.sp.getString("emailid", null);
-      this.pd = new ProgressDialog(this);
-      this.pd.setProgressStyle(0);
-      this.pd.setMessage("Loading..");
-      this.pd.setCancelable(false);
-      this.cc = new CommonClass(this);
-      this.name = ((EditText)findViewById(2130968598));
-      this.emailid = ((EditText)findViewById(2130968599));
-      this.submit = ((Button)findViewById(2130968600));
-      this.submit.setOnClickListener(this);
-      return;
-    }
-    catch (Exception e)
-    {
-      e.printStackTrace();
-    }
-  }
-  
-  public void onStart()
-  {
-    super.onStart();
-    EasyTracker.getInstance(this).activityStart(this);
-  }
-  
-  public void onStop()
-  {
-    super.onStop();
-    EasyTracker.getInstance(this).activityStop(this);
-  }
-  
-  public void sendEmail()
-    throws Exception
-  {
-    Object localObject = "http://clients.mappingclasses.com/mailserverapi/?token=f8cfb687237a2643a34fac1f3b851611&email=" + this.semailid + "&password=" + this.newpassword;
-    DefaultHttpClient localDefaultHttpClient = new DefaultHttpClient();
-    HttpPost localHttpPost = new HttpPost();
-    localHttpPost.setURI(URI.create((String)localObject));
-    localDefaultHttpClient.execute(localHttpPost);
-    localObject = Toast.makeText(this, "Mail Sent", 0);
-    ((Toast)localObject).setGravity(16, 0, 0);
-    ((Toast)localObject).show();
-    finish();
-  }
+public class ForgotPassword extends Activity implements OnClickListener{
+	
+	EditText name,emailid;
+	ImageButton submit,backallpage;
+	
+	SharedPreferences sp;
+	Editor e;
+	
+	String sname,semailid,newpassword;
+	
+	CommonClass cc;
+	
+	@SuppressLint("NewApi")
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.forgotpassword);
+		
+		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+		
+		try{
+			StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build(); StrictMode.setThreadPolicy(policy);	
+			cc=new CommonClass(this);
+			
+			sp=this.getSharedPreferences("com.rockin.applock2", MODE_PRIVATE);
+			e=sp.edit();
+			
+			sname=sp.getString("name", null);
+			semailid=sp.getString("emailid", null);
+			
+			name=(EditText)findViewById(R.id.name);
+			emailid=(EditText)findViewById(R.id.emailid);
+			submit=(ImageButton)findViewById(R.id.submit);
+			backallpage=(ImageButton)findViewById(R.id.backallpage);
+			
+			submit.setOnClickListener(this);
+			backallpage.setOnClickListener(this);
+		}catch(Exception e){}
+	}
+	
+	@Override
+	public void onBackPressed() {
+		super.onBackPressed();
+		Intent i=new Intent("chooserapplock");
+		i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		startActivity(i);
+		
+		finish();
+	}
+
+	@Override
+	public void onClick(View v) {
+		
+		try{
+			switch(v.getId())
+			{
+			case R.id.submit:
+				String tname=name.getText().toString();
+				String temailid=emailid.getText().toString();
+				
+				if(tname!=null && temailid!=null)
+				{
+					if(tname.equalsIgnoreCase(sname) && temailid.equalsIgnoreCase(semailid))
+					{
+						generateRandomPassword();
+						sendEmail();
+					}
+					else
+					{
+						Toast t=Toast.makeText(this, "Incorrect Details", Toast.LENGTH_SHORT);
+					
+						t.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+						t.show();
+					}
+				}
+				else
+				{
+					Toast t=Toast.makeText(this, "Enter All Details", Toast.LENGTH_SHORT);
+				
+					t.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+					t.show();
+				}
+				break;
+			case R.id.forgotpassword:
+				Intent i=new Intent("chooserapplock");
+				i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i);
+				
+				finish();
+				break;
+			case R.id.backallpage:
+				Intent i1=new Intent("chooserapplock");
+				i1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+				startActivity(i1);
+				
+				finish();
+				break;
+			}
+		}catch(Exception e){}
+	}
+	
+	public void generateRandomPassword() throws Exception
+	{
+		newpassword=UUID.randomUUID().toString();
+		
+		if(newpassword.length()>5)
+		{
+			newpassword=newpassword.substring(0, 5);
+		}
+		
+		cc.writePassword(newpassword);
+		
+		e.putString("locktype", "string");
+		e.commit();
+		
+	}
+	
+	public void sendEmail() throws Exception
+	{
+		String url1 = "http://clients.mappingclasses.com/mailserverapi/?token=f8cfb687237a2643a34fac1f3b851611&email="
+				+ semailid + "&password=" + newpassword;
+		
+		HttpClient client=new DefaultHttpClient();
+		
+		HttpPost post=new HttpPost();
+		post.setURI(URI.create(url1));
+		
+		client.execute(post);
+		Toast t=Toast.makeText(this, "Mail Sent", Toast.LENGTH_SHORT);
+		
+		t.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+		t.show();
+	}
+
 }
-
-
-/* Location:              D:\ANDROID\Decompile\AppLock-dex2jar.jar!\com\rockin\applock2\ForgotPassword.class
- * Java compiler version: 6 (50.0)
- * JD-Core Version:       0.7.1
- */
