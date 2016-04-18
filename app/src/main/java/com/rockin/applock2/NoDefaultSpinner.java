@@ -22,7 +22,7 @@ public class NoDefaultSpinner
       if (s_pSelectionChangedMethod != null) {
         s_pSelectionChangedMethod.setAccessible(true);
       }
-      return;
+     // return;
     }
     catch (Exception localException)
     {

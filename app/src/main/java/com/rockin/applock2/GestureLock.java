@@ -41,6 +41,7 @@ public class GestureLock
   
   public void addGesture(View paramView)
   {
+
     if ((this.mGesture != null) && (this.mGesture.getLength() > 130.0D))
     {
       this.pd.show();

@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.text.Editable;
-import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
@@ -15,7 +14,7 @@ import android.widget.TextView;
 
 public class StringLock
   extends Activity
-  implements View.OnClickListener
+  implements OnClickListener
 {
   boolean b;
   CommonClass cc;
@@ -218,7 +217,7 @@ public class StringLock
       ((Button)findViewById(2130968601)).setVisibility(4);
       return;
     }
-    catch (Exception paramBundle) {}
+    catch (Exception e) {}
   }
   
   protected void onPause()

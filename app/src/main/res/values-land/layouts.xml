@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <item type="layout" name="alp_lock_pattern_activity">@layout/alp_lock_pattern_activity_land</item>
-</resources>

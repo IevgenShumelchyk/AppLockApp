@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.StrictMode;
 import android.os.StrictMode.ThreadPolicy.Builder;
 import android.text.Editable;
-import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.widget.Button;
@@ -18,7 +17,7 @@ import android.widget.Toast;
 
 public class SetPassword
   extends Activity
-  implements View.OnClickListener
+  implements OnClickListener
 {
   CommonClass cc;
   SharedPreferences.Editor e;
@@ -35,6 +34,7 @@ public class SetPassword
   public boolean checkAllStrings()
     throws Exception
   {
+    Toast localToast;
     if ((this.sname.trim().length() == 0) && ((this.semailid.trim().length() == 0) || (!this.semailid.contains("@"))))
     {
       localToast = Toast.makeText(this, "Enter correct details", 0);
@@ -59,7 +59,7 @@ public class SetPassword
       localToast.show();
       return false;
     }
-    Toast localToast = Toast.makeText(this, "Enter correct email", 0);
+    localToast = Toast.makeText(this, "Enter correct email", 0);
     localToast.setGravity(16, 0, 0);
     localToast.show();
     return false;
@@ -181,7 +181,7 @@ public class SetPassword
       this.submit.setOnClickListener(this);
       return;
     }
-    catch (Exception paramBundle) {}
+    catch (Exception e) {}
   }
   
   protected void onPause()

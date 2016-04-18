@@ -67,6 +67,9 @@ public class GestureLockFirstTime
       finish();
       return;
     }
+    GestureLibrary paramGestureLibrary;
+    Toast paramToast;
+    Intent paramIntent;
     if ((this.mGesture != null) && (this.mGesture.getLength() > 130.0D))
     {
       this.pd.show();
@@ -76,20 +79,20 @@ public class GestureLockFirstTime
       this.e.putString("launched", "true");
       this.e.commit();
       new File(Environment.getExternalStorageDirectory(), "gestures").delete();
-      paramView = GestureLibraries.fromFile(new File(Environment.getExternalStorageDirectory(), "gestures"));
-      paramView.addGesture("My gesture", this.mGesture);
-      paramView.save();
-      paramView = Toast.makeText(this, "Gesture Recorded", 0);
-      paramView.setGravity(16, 0, 0);
-      paramView.show();
-      paramView = new Intent("installedappsapplock");
-      paramView.setFlags(67108864);
-      startActivity(paramView);
+      paramGestureLibrary = GestureLibraries.fromFile(new File(Environment.getExternalStorageDirectory(), "gestures"));
+      paramGestureLibrary.addGesture("My gesture", this.mGesture);
+      paramGestureLibrary.save();
+      paramToast = Toast.makeText(this, "Gesture Recorded", 0);
+      paramToast.setGravity(16, 0, 0);
+      paramToast.show();
+      paramIntent = new Intent("installedappsapplock");
+      paramIntent.setFlags(67108864);
+      startActivity(paramIntent);
       return;
     }
-    paramView = Toast.makeText(this, "Draw Gesture", 0);
-    paramView.setGravity(16, 0, 0);
-    paramView.show();
+    paramToast = Toast.makeText(this, "Draw Gesture", 0);
+    paramToast.setGravity(16, 0, 0);
+    paramToast.show();
   }
   
   protected void onCreate(Bundle paramBundle)
@@ -161,13 +164,13 @@ public class GestureLockFirstTime
   public void onStart()
   {
     super.onStart();
-    EasyTracker.getInstance().activityStart(this);
+    EasyTracker.getInstance(this).activityStart(this);
   }
   
   public void onStop()
   {
     super.onStop();
-    EasyTracker.getInstance().activityStop(this);
+    EasyTracker.getInstance(this).activityStop(this);
   }
   
   private class GesturesProcessor

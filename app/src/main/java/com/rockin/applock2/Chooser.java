@@ -1,241 +1,6 @@
 package com.rockin.applock2;
 
-import group.pals.android.lib.ui.lockpattern.LockPatternActivity;
-import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
-import android.content.pm.ActivityInfo;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.Bundle;
-import android.view.Gravity;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.ImageButton;
-import android.widget.Toast;
-
-public class Chooser extends Activity implements OnClickListener{
-
-  final int REQ_CREATE_PATTERN=1;
-  private static final int REQ_ENTER_PATTERN = 2;
-
-  ImageButton changepassword,forgotpassword,changelist,exit,instructions,aboutus,rzone;
-
-  String locktype;
-
-  SharedPreferences sp;
-  Editor e;
-
-  CommonClass cc;
-
-  boolean exitOnPause=true;
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.chooser1);
-
-    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
-    try{
-      sp=this.getSharedPreferences("com.rockin.applock2",Context.MODE_PRIVATE);
-      e=sp.edit();
-
-      locktype=sp.getString("locktype", "0");
-
-      cc=new CommonClass(this);
-
-      changepassword=(ImageButton)findViewById(R.id.changepassword);
-      forgotpassword=(ImageButton)findViewById(R.id.forgotpassword);
-      changelist=(ImageButton)findViewById(R.id.changeapplist);
-      exit=(ImageButton)findViewById(R.id.exit);
-      instructions=(ImageButton)findViewById(R.id.instructions);
-      aboutus=(ImageButton)findViewById(R.id.aboutus);
-      rzone=(ImageButton)findViewById(R.id.rzone);
-
-      changepassword.setOnClickListener(this);
-      forgotpassword.setOnClickListener(this);
-      changelist.setOnClickListener(this);
-      exit.setOnClickListener(this);
-      instructions.setOnClickListener(this);
-      aboutus.setOnClickListener(this);
-      rzone.setOnClickListener(this);
-    }catch(Exception e){}
-  }
-
-
-  public void onClick(View v) {
-
-    try{
-      switch(v.getId())
-      {
-        case R.id.changepassword:
-          if(locktype.equals("pattern"))
-          {
-            changePatternLock();
-          }
-          else if(locktype.equals("string"))
-          {
-            changeStringLock();
-          }
-          else if(locktype.equals("gesture"))
-          {
-            changeGestureLock();
-          }
-          else if(locktype.equals("numeric"))
-          {
-            changeNumericLock();
-          }
-          break;
-        case R.id.forgotpassword:
-
-          ConnectivityManager connectivityManager= (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-          NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-
-          if(activeNetworkInfo != null && activeNetworkInfo.isConnected())
-          {
-            Intent i1=new Intent("forgotpasswordapplock");
-            i1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i1);
-            finish();
-          }
-          else
-          {
-            Toast t=Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT);
-
-            t.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-            t.show();
-          }
-
-          break;
-        case R.id.changeapplist:
-
-          e.putString("change", null);
-          e.commit();
-
-          String sender=null;
-
-          if(locktype.equals("string"))
-            sender="stringlockapplock";
-          else if(locktype.equals("pattern"))
-            sender="patternlockapplock";
-          else if(locktype.equals("gesture"))
-            sender="gesturecheckerapplock";
-          else if(locktype.equals("numeric"))
-            sender="numericlockapplock";
-
-          Intent i=new Intent(sender);
-          i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-          startActivity(i);
-
-          finish();
-          break;
-        case R.id.instructions:
-          Intent i1=new Intent("instructionsapplock");
-          i1.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-          startActivity(i1);
-
-          finish();
-          break;
-        case R.id.aboutus:
-          Intent i2=new Intent("aboutusapplock");
-          i2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-          startActivity(i2);
-
-          finish();
-          break;
-        case R.id.exit:
-          finish();
-          break;
-        case R.id.rzone:
-          Intent i3=new Intent(Chooser.this,RZoneActivity.class);
-          i3.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-          startActivity(i3);
-          //finish();
-      }
-    }catch(Exception e){}
-  }
-
-  public void changeStringLock() throws Exception
-  {
-    Intent i=new Intent("stringlockchangeapplock");
-    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    startActivity(i);
-    finish();
-  }
-
-  public void changeGestureLock() throws Exception
-  {
-    Intent i=new Intent("gesturelockchangeapplock");
-    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    startActivity(i);
-    finish();
-  }
-
-  public void changeNumericLock()
-  {
-    Intent i=new Intent("numericlockchangeapplock");
-    i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-    startActivity(i);
-    finish();
-  }
-
-  public void changePatternLock() throws Exception
-  {
-    String pass=sp.getString("password", "0");
-
-    Intent intent = new Intent(LockPatternActivity.ACTION_COMPARE_PATTERN, null,this, LockPatternActivity.class);
-
-    char[] savedPattern=pass.toCharArray();
-
-    exitOnPause=false;
-
-    intent.putExtra(LockPatternActivity.EXTRA_PATTERN, savedPattern);
-    startActivityForResult(intent, REQ_ENTER_PATTERN);
-  }
-
-  @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    super.onActivityResult(requestCode, resultCode, data);
-
-    switch(requestCode)
-    {
-      case REQ_ENTER_PATTERN: {
-        switch (resultCode) {
-          case RESULT_OK:
-
-            e.putString("change", "true");
-            e.commit();
-
-            Intent i=new Intent(this,LockSelector.class);
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(i);
-
-            finish();
-            break;
-          case RESULT_CANCELED:
-            finish();
-            break;
-          case LockPatternActivity.RESULT_FAILED:
-            break;
-        }
-      }
-    }
-  }
-  @Override
-  protected void onPause() {
-    super.onPause();
-
-    if(exitOnPause==true)
-      finish();
-  }
-
-}
-
-/* from decompile
-
+import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -272,6 +37,8 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+
+import org.acra.util.ToastSender;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -280,8 +47,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
-
-
 
 public class Chooser
   extends FragmentActivity
@@ -383,9 +148,15 @@ public class Chooser
     case -1: 
       this.e.putString("change", "true");
       this.e.commit();
-      paramIntent = Toast.makeText(this, "Success. Please change your lock now.", 0);
-      paramIntent.setGravity(16, 0, 0);
-      paramIntent.show();
+
+      Toast paramToast;
+      paramToast = Toast.makeText(this, "Success. Please change your lock now.", Toast.LENGTH_SHORT);
+      paramToast.setGravity(16, 0, 0);
+      paramToast.show();
+      //paramIntent = Toast.makeText(this, "Success. Please change your lock now.", 0);
+      //paramIntent.setGravity(16, 0, 0);
+      //paramIntent.show();
+
       if (Utils.selected == 1) {
         startActivity(new Intent(this, StringLockFirstTime.class));
       }
@@ -407,6 +178,9 @@ public class Chooser
   
   public void onClick(View paramView)
   {
+    Toast paramToast;
+    Intent paramIntent;
+    String paramString = "";
     try
     {
       switch (paramView.getId())
@@ -415,67 +189,84 @@ public class Chooser
         this.drawer.toggle();
         return;
       case 2130968596: 
-        paramView = ((ConnectivityManager)getSystemService("connectivity")).getActiveNetworkInfo();
+        //paramView = ((ConnectivityManager)getSystemService("connectivity")).getActiveNetworkInfo();
+        NetworkInfo paramNetInfo = ((ConnectivityManager)getSystemService("connectivity")).getActiveNetworkInfo();
         if (this.dropdown.getSelectedItemPosition() == 0)
         {
           Toast.makeText(this, "Please set a lock first.", 1).show();
           return;
         }
-        if ((paramView != null) && (paramView.isConnected()))
+        if ((paramNetInfo != null) && (paramNetInfo.isConnected()))
         {
-          paramView = new Intent("forgotpasswordapplock");
-          paramView.setFlags(67108864);
-          startActivity(paramView);
+          //paramView = new Intent("forgotpasswordapplock");
+          //paramView.setFlags(67108864);
+          //startActivity(paramView);
+          paramIntent = new Intent("forgotpasswordapplock");
+          paramIntent.setFlags(67108864);
+          startActivity(paramIntent);
           return;
         }
-        paramView = Toast.makeText(this, "No Internet Connection", 0);
-        paramView.setGravity(16, 0, 0);
-        paramView.show();
+        //paramView = Toast.makeText(this, "No Internet Connection", 0);
+        //paramView.setGravity(16, 0, 0);
+        //paramView.show();
+        paramToast = Toast.makeText(this, "No Internet Connection", Toast.LENGTH_SHORT);
+        paramToast.setGravity(16, 0, 0);
+        paramToast.show();
         return;
       case 2130968594: 
         this.formfilled = this.sp.getString("formfilled", null);
         if (this.formfilled == null)
         {
-          Toast.makeText(this, "Please set backup email first.", 1).show();
+          Toast.makeText(this, "Please set backup email first.", Toast.LENGTH_LONG).show();
           this.drawer.toggle();
           return;
         }
         if (this.dropdown.getSelectedItemPosition() == 0)
         {
-          Toast.makeText(this, "Please set a lock first.", 1).show();
+          Toast.makeText(this, "Please set a lock first.", Toast.LENGTH_LONG).show();
           return;
         }
         this.e.putString("change", null);
         this.e.commit();
-        paramView = null;
+        //paramView = null;
         if (this.locktype.equals("string")) {
-          paramView = "stringlockapplock";
+          //paramView = "stringlockapplock";
+          paramString = "stringlockapplock";
         }
         for (;;)
         {
-          paramView = new Intent(paramView);
-          paramView.setFlags(67108864);
-          startActivity(paramView);
+          //paramView = new Intent(paramView);
+          //paramView.setFlags(67108864);
+          //startActivity(paramView);
+          paramIntent = new Intent("stringlockapplock");
+          paramIntent.setFlags(67108864);
+          startActivity(paramIntent);
+
           finish();
           return;
           if (this.locktype.equals("pattern")) {
-            paramView = "patternlockapplock";
+            paramString = "patternlockapplock";
           } else if (this.locktype.equals("gesture")) {
-            paramView = "gesturecheckerapplock";
+            paramString = "gesturecheckerapplock";
           } else if (this.locktype.equals("numeric")) {
-            paramView = "numericlockapplock";
+            paramString = "numericlockapplock";
           }
         }
       case 2130968597: 
-        paramView = new Intent("instructionsapplock");
-        paramView.setFlags(67108864);
-        startActivity(paramView);
+        //paramView = new Intent("instructionsapplock");
+        //paramView.setFlags(67108864);
+        //startActivity(paramView);
+        paramIntent = new Intent("instructionsapplock");
+        paramIntent.setFlags(67108864);
+        startActivity(paramIntent);
+
         finish();
         return;
       }
       return;
     }
-    catch (Exception paramView) {}
+   // catch (Exception paramView) {}
+    catch (Exception e) {}
   }
   
   protected void onCreate(Bundle paramBundle)
@@ -641,7 +432,7 @@ public class Chooser
           if (!Globals.isNetworkAvailable(this)) {
             break;
           }
-          new CheckVersionTask(null).execute(new Void[0]);
+          new CheckVersionTask().execute(new Void[0]);
           return;
         }
         if (this.sp.getString("locktype", "").equals("numeric"))
@@ -653,9 +444,9 @@ public class Chooser
           break label516;
         }
       }
-      catch (Exception paramBundle)
+      catch (Exception e)
       {
-        paramBundle.printStackTrace();
+        e.printStackTrace();
         return;
       }
       this.dropdown.setSelection(1);
@@ -667,10 +458,12 @@ public class Chooser
         this.dropdown.setSelection(0);
       }
     }
+
   }
   
   protected android.app.Dialog onCreateDialog(final int paramInt)
   {
+    /*
     switch (paramInt)
     {
     default: 
@@ -765,6 +558,7 @@ public class Chooser
       }
     });
     return localBuilder.create();
+    */
   }
   
   public void onResume()
@@ -854,8 +648,9 @@ public class Chooser
       return null;
     }
     
-    protected void onPostExecute(Void paramVoid)
+    protected void onPostExecute() // Void paramVoid
     {
+      Intent paramVoid;
       if (!Chooser.this.isFinishing()) {
         this.progressDialog.dismiss();
       }

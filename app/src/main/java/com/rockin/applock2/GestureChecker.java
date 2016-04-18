@@ -68,7 +68,7 @@ public class GestureChecker
       paramView.getId();
       return;
     }
-    catch (Exception paramView) {}
+    catch (Exception e) {}
   }
   
   protected void onCreate(Bundle paramBundle)
@@ -94,11 +94,13 @@ public class GestureChecker
       ((Button)findViewById(2130968601)).setVisibility(4);
       return;
     }
-    catch (Exception paramBundle) {}
+    catch (Exception e) {}
   }
   
   public void onGesturePerformed(GestureOverlayView paramGestureOverlayView, Gesture paramGesture)
   {
+    Intent paramIntent;
+    Toast paramToast;
     try
     {
       if (((Prediction)this.library.recognize(paramGesture).get(0)).score > 2.0D)
@@ -109,18 +111,18 @@ public class GestureChecker
           return;
         }
         this.pd.show();
-        paramGestureOverlayView = new Intent("installedappsapplock");
-        paramGestureOverlayView.setFlags(67108864);
-        startActivity(paramGestureOverlayView);
+        paramIntent = new Intent("installedappsapplock");
+        paramIntent.setFlags(67108864);
+        startActivity(paramIntent);
         finish();
         return;
       }
-      paramGestureOverlayView = Toast.makeText(this, "Failed", 0);
-      paramGestureOverlayView.setGravity(16, 0, 0);
-      paramGestureOverlayView.show();
+      paramToast = Toast.makeText(this, "Failed", 0);
+      paramToast.setGravity(16, 0, 0);
+      paramToast.show();
       return;
     }
-    catch (Exception paramGestureOverlayView) {}
+    catch (Exception e) {}
   }
   
   protected void onPause()

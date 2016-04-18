@@ -72,9 +72,9 @@ public class PasswordMenu
           return;
         }
       }
-      catch (Exception paramView)
+      catch (Exception e)
       {
-        paramView.printStackTrace();
+        e.printStackTrace();
         return;
       }
       if (!Utils.isEmailValid(this.emailid.getText().toString()))

@@ -23,6 +23,8 @@ public class ForgotPassword
   extends Activity
   implements View.OnClickListener
 {
+  Toast paramToast;
+
   CommonClass cc;
   SharedPreferences.Editor e;
   EditText emailid;
@@ -52,30 +54,31 @@ public class ForgotPassword
     {
       switch (paramView.getId())
       {
-      case 2130968600: 
-        paramView = this.name.getText().toString();
+      case 2130968600:
+        String paramString;
+        paramString = this.name.getText().toString();
         String str = this.emailid.getText().toString();
-        if ((paramView != null) && (str != null))
+        if ((paramString != null) && (str != null))
         {
-          if ((paramView.equalsIgnoreCase(this.sname)) && (str.equalsIgnoreCase(this.semailid)))
+          if ((paramString.equalsIgnoreCase(this.sname)) && (str.equalsIgnoreCase(this.semailid)))
           {
             generateRandomPassword();
             sendEmail();
             return;
           }
-          paramView = Toast.makeText(this, "Incorrect Details", 0);
-          paramView.setGravity(16, 0, 0);
-          paramView.show();
+          paramToast = Toast.makeText(this, "Incorrect Details", 0);
+          paramToast.setGravity(16, 0, 0);
+          paramToast.show();
           return;
         }
-        paramView = Toast.makeText(this, "Enter All Details", 0);
-        paramView.setGravity(16, 0, 0);
-        paramView.show();
+        paramToast = Toast.makeText(this, "Enter All Details", 0);
+        paramToast.setGravity(16, 0, 0);
+        paramToast.show();
         return;
       }
       return;
     }
-    catch (Exception paramView) {}
+    catch (Exception e) {}
   }
   
   @SuppressLint({"NewApi"})
@@ -101,22 +104,22 @@ public class ForgotPassword
       this.submit.setOnClickListener(this);
       return;
     }
-    catch (Exception paramBundle)
+    catch (Exception e)
     {
-      paramBundle.printStackTrace();
+      e.printStackTrace();
     }
   }
   
   public void onStart()
   {
     super.onStart();
-    EasyTracker.getInstance().activityStart(this);
+    EasyTracker.getInstance(this).activityStart(this);
   }
   
   public void onStop()
   {
     super.onStop();
-    EasyTracker.getInstance().activityStop(this);
+    EasyTracker.getInstance(this).activityStop(this);
   }
   
   public void sendEmail()

@@ -8,6 +8,7 @@ import android.os.Bundle;
 import com.google.analytics.tracking.android.EasyTracker;
 import group.pals.android.lib.ui.lockpattern.LockPatternActivity;
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 public class PatternLock
   extends Activity
@@ -21,6 +22,7 @@ public class PatternLock
   
   protected void onActivityResult(int paramInt1, int paramInt2, Intent paramIntent)
   {
+    Intent paramIntent1;
     super.onActivityResult(paramInt1, paramInt2, paramIntent);
     switch (paramInt1)
     {
@@ -29,11 +31,11 @@ public class PatternLock
     case 1: 
       if (paramInt2 == -1)
       {
-        paramIntent = new String(paramIntent.getCharArrayExtra(LockPatternActivity.EXTRA_PATTERN));
+        String paramIntentStr = new String(paramIntent.getCharArrayExtra(LockPatternActivity.EXTRA_PATTERN));
         this.cc.deleteFiles();
         this.e.putString("locktype", "pattern");
         this.e.putString("launched", "true");
-        this.e.putString("password", paramIntent);
+        this.e.putString("password", paramIntentStr);
         this.e.commit();
         if (getIntent().getExtras() == null)
         {
@@ -50,17 +52,12 @@ public class PatternLock
       this.e.commit();
       return;
     }
-    switch (paramInt2)
-    {
-    case 0: 
-    default: 
-      return;
-    }
+
     if (getIntent().getExtras() == null)
     {
-      paramIntent = new Intent("installedappsapplock");
-      paramIntent.setFlags(67108864);
-      startActivity(paramIntent);
+      paramIntent1 = new Intent("installedappsapplock");
+      paramIntent1.setFlags(67108864);
+      startActivity(paramIntent1);
       finish();
       return;
     }
@@ -96,6 +93,7 @@ public class PatternLock
   
   protected void onCreate(Bundle paramBundle)
   {
+    String paramBundleStr;
     super.onCreate(paramBundle);
     setRequestedOrientation(1);
     this.sp = getSharedPreferences("com.rockin.applock2", 0);
@@ -106,7 +104,7 @@ public class PatternLock
     if (this.sp.getString("change", null) != null)
     {
       this.temp = ((String)localObject);
-      paramBundle = "0";
+      paramBundleStr = "0";
     }
     if (paramBundle.equals("0"))
     {
@@ -114,7 +112,8 @@ public class PatternLock
       return;
     }
     localObject = new Intent(LockPatternActivity.ACTION_COMPARE_PATTERN, null, this, LockPatternActivity.class);
-    paramBundle = paramBundle.toCharArray();
+
+    //paramBundleStr = paramBundleStr.toCharArray();
     ((Intent)localObject).putExtra(LockPatternActivity.EXTRA_PATTERN, paramBundle);
     startActivityForResult((Intent)localObject, 2);
   }
@@ -122,13 +121,13 @@ public class PatternLock
   public void onStart()
   {
     super.onStart();
-    EasyTracker.getInstance().activityStart(this);
+    EasyTracker.getInstance(this).activityStart(this);
   }
   
   public void onStop()
   {
     super.onStop();
-    EasyTracker.getInstance().activityStop(this);
+    EasyTracker.getInstance(this).activityStop(this);
   }
 }
 
